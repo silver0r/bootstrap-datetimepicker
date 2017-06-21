@@ -394,6 +394,8 @@
     },
 
     show: function (e) {
+      this.element.addClass('selected');
+        
       this.picker.show();
       this.height = this.component ? this.component.outerHeight() : this.element.outerHeight();
       if (this.forceParse) {
@@ -413,6 +415,8 @@
     },
 
     hide: function () {
+      this.element.removeClass('selected');
+        
       if (!this.isVisible) return;
       if (this.isInline) return;
       this.picker.hide();
@@ -436,6 +440,8 @@
         type: 'hide',
         date: this.date
       });
+      
+      this.element.trigger('changeDate');
     },
 
     remove: function () {
@@ -708,6 +714,7 @@
       this.picker.find('.datetimepicker-months td').html(html);
     },
 
+    // 달력 상단 표시 수정
     fill: function () {
       if (!this.date || !this.viewDate) {
         return;
@@ -723,14 +730,23 @@
         endMonth = this.endDate.getUTCMonth() + 1,
         currentDate = (new UTCDate(this.date.getUTCFullYear(), this.date.getUTCMonth(), this.date.getUTCDate())).valueOf(),
         today = new Date();
-      this.setTitle('.datetimepicker-days', dates[this.language].months[month] + ' ' + year)
+      
+        var viewMonth = month + 1;
+        viewMonth = viewMonth < 10 ? '0' + viewMonth : viewMonth;
+        var viewDay = dayMonth < 10 ? '0' + dayMonth : dayMonth;
+      
+//      this.setTitle('.datetimepicker-days', dates[this.language].months[month] + ' ' + year);
+        this.setTitle('.datetimepicker-days', year + '-' + viewMonth);
+      
       if (this.formatViewType === 'time') {
         var formatted = this.getFormattedDate();
         this.setTitle('.datetimepicker-hours', formatted);
         this.setTitle('.datetimepicker-minutes', formatted);
       } else {
-        this.setTitle('.datetimepicker-hours', dayMonth + ' ' + dates[this.language].months[month] + ' ' + year);
-        this.setTitle('.datetimepicker-minutes', dayMonth + ' ' + dates[this.language].months[month] + ' ' + year);
+//        this.setTitle('.datetimepicker-hours', dayMonth + ' ' + dates[this.language].months[month] + ' ' + year);
+//        this.setTitle('.datetimepicker-minutes', dayMonth + ' ' + dates[this.language].months[month] + ' ' + year);
+        this.setTitle('.datetimepicker-hours', year + '-' + viewMonth + '-' + viewDay);
+        this.setTitle('.datetimepicker-minutes', year + '-' + viewMonth + '-' + viewDay);
       }
       this.picker.find('tfoot th.today')
         .text(dates[this.language].today || dates['en'].today)
@@ -1054,7 +1070,10 @@
                 }
                 break;
               case 'today':
-                var date = new Date();
+                // 날짜 주입 관련 처리
+                // var date = new Date();
+                var date = this.initialDate;
+                
                 date = UTCDate(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), 0);
 
                 // Respect startDate and endDate.
@@ -1504,6 +1523,18 @@
       suffix:      ['st', 'nd', 'rd', 'th'],
       today:       'Today',
       clear:       'Clear'
+    }
+    // language ko
+    , ko: {
+      days: ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"],
+      daysShort: ["일", "월", "화", "수", "목", "금", "토", "일"],
+      daysMin: ["일", "월", "화", "수", "목", "금", "토", "일"],
+      months: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+      monthsShort: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+      meridiem: ["오전", "오후"],
+      suffix: [],
+      today: "오늘",
+      clear: "Clear"
     }
   };
 
